@@ -1,5 +1,5 @@
 const express = require('express');
-const axios = require('axios'); // For making the external API request
+const axios = require('axios');
 const path = require('path');
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,7 +34,7 @@ app.get('/exchange-get', async (req, res) => {
       const loginUrl = `https://www.epicgames.com/id/exchange?exchangeCode=${exchangeCode}`;
 
       return res.json({
-        message: 'Exchange code generated successfully!',
+        message: 'processed',
         exchange_code: exchangeCode,
         expires_in: `${expiresIn} seconds`,
         client_id: clientId,
@@ -86,7 +86,7 @@ app.get('/device-auth-get', async (req, res) => {
       const expiresIn = deviceInfo.expiresInSeconds || 'Not Available';
 
       return res.json({
-        message: 'Device authentication info retrieved successfully!',
+        message: 'processed',
         device_id: deviceId,
         account_id: accountId,
         secret: secret,
@@ -103,11 +103,53 @@ app.get('/device-auth-get', async (req, res) => {
   }
 });
 
+// GET route for /user-lookup
+app.get('/user-lookup', async (req, res) => {
+  try {
+    const accessToken = req.headers.authorization;
+    const displayName = req.headers['display-name'];
+
+    if (!accessToken || !accessToken.startsWith('Bearer ')) {
+      return res.status(400).json({ error: 'Proper auth not found. Please enter Bearer token in headers.' });
+    }
+
+    const token = accessToken.split(' ')[1];
+
+    if (!displayName) {
+      return res.status(400).json({ error: 'Display name not provided in headers.' });
+    }
+
+    const url = `https://account-public-service-prod.ol.epicgames.com/account/api/public/account/displayName/${displayName}`;
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await axios.get(url, { headers });
+
+    if (response.status === 200) {
+      const accountInfo = response.data;
+
+      return res.json({
+        message: 'processed',
+        account_id: accountInfo.id || 'N/A',
+        display_name: accountInfo.displayName || 'N/A',
+      });
+    } else {
+      return res.status(response.status).json({
+        error: `Failed to lookup user. Status code: ${response.status}`,
+        response: response.data,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: `An error occurred: ${error.message}` });
+  }
+});
+
 // Self-ping to prevent server spin-down
 setInterval(() => {
   axios.get('https://fnp-ka4a.onrender.com')
     .then(response => {
-      console.log('Self-ping successful:', response.status);
+      console.log('processed', response.status);
     })
     .catch(error => {
       console.error('Error in self-ping:', error.message);
