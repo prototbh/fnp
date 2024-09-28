@@ -10,13 +10,14 @@
       margin: 0;
       height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       font-family: 'Arial', sans-serif;
       color: white;
-      background: linear-gradient(120deg, #ff7eb9, #ff758c, #ff65a3, #c39ea0, #9da9ff);
+      background: linear-gradient(120deg, #ff7eb9, #ff758c, #9da9ff, #9da9ff, #ff65a3, #c39ea0);
       background-size: 400% 400%;
-      animation: gradientBackground 10s ease infinite;
+      animation: gradientBackground 20s ease infinite; /* Increased duration */
       overflow: hidden;
     }
 
@@ -43,10 +44,17 @@
     h1 {
       font-size: 48px;
       text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+      margin-bottom: 20px; /* Space between title and "made by" text */
+    }
+
+    .made-by {
+      font-size: 20px;
+      text-shadow: 1px 1px 5px rgba(255, 255, 255, 0.5);
     }
   </style>
 </head>
 <body>
   <h1>Welcome to Your Dream API</h1>
+  <div class="made-by">Made by Proto</div>
 </body>
 </html>
