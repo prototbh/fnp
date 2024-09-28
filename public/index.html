@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Your Dream API</title>
+  <style>
+    /* Set the background gradient with stars */
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Arial', sans-serif;
+      color: white;
+      background: linear-gradient(120deg, #ff7eb9, #ff758c, #ff65a3, #c39ea0, #9da9ff);
+      background-size: 400% 400%;
+      animation: gradientBackground 10s ease infinite;
+      overflow: hidden;
+    }
+
+    /* Animation for background gradient */
+    @keyframes gradientBackground {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Starry background effect */
+    body:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('https://www.transparenttextures.com/patterns/stardust.png');
+      opacity: 0.3;
+      z-index: -1;
+    }
+
+    h1 {
+      font-size: 48px;
+      text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.8);
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Your Dream API</h1>
+</body>
+</html>
