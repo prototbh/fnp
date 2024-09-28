@@ -51,6 +51,7 @@ app.post('/exchange', async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Error in /exchange:', error); // Log detailed error
     return res.status(500).json({ error: `An error occurred: ${error.message}` });
   }
 });
@@ -103,104 +104,13 @@ app.get('/device-auth-get', async (req, res) => {
       });
     }
   } catch (error) {
+    console.error('Error in /device-auth-get:', error); // Log detailed error
     return res.status(500).json({ error: `An error occurred: ${error.message}` });
   }
 });
 
-// GET route for /ghosty-skin
-app.get('/ghosty-skin', async (req, res) => {
-  try {
-    const accessToken = req.headers.authorization;
-    const accountId = req.headers['account-id'];
-    const skinName = req.query.skin_name;
-
-    if (!accessToken || !accessToken.startsWith('Bearer ')) {
-      return res.status(400).json({ error: 'Authorization header missing or improperly formatted.' });
-    }
-
-    const token = accessToken.split(' ')[1]; // Extract Bearer token
-
-    if (!accountId) {
-      return res.status(400).json({ error: 'Account ID is required in the headers.' });
-    }
-
-    if (!skinName) {
-      return res.status(400).json({ error: 'Skin name is required as a query parameter.' });
-    }
-
-    // Determine skin_id
-    let skinId = skinName;
-    
-    // Check if skinName starts with 'CID', 'character_' or 'bean_'
-    if (!(skinName.startsWith('character_') || skinName.startsWith('cid_') || skinName.startsWith('bean_'))) {
-      // Fetch the skin ID from Fortnite API
-      const response = await axios.get(`https://fortnite-api.com/v2/cosmetics/br/search?name=${skinName}`);
-      const skinData = response.data.data;
-      if (skinData) {
-        skinId = skinData.id;
-      }
-    }
-
-    // Get party information
-    const partyUrl = `https://party-service-prod.ol.epicgames.com/party/api/v1/Fortnite/user/${accountId}`;
-    const partyResponse = await axios.get(partyUrl, { headers: { Authorization: `Bearer ${token}` } });
-
-    if (partyResponse.status !== 200) {
-      return res.status(403).json({ error: 'You must be online.' });
-    }
-
-    const partyData = partyResponse.data.current;
-    if (!partyData || partyData.length === 0) {
-      return res.status(403).json({ error: 'You must be online!' });
-    }
-
-    const partyId = partyData[0].id;
-    const member = partyData[0].members.find(m => m.account_id === accountId);
-    if (!member) {
-      return res.status(404).json({ error: 'Member not found.' });
-    }
-
-    const currentRevision = member.revision;
-    const updateObject = {
-      "Default:AthenaCosmeticLoadout_j": JSON.stringify({
-        "AthenaCosmeticLoadout": {
-          "characterPrimaryAssetId": `AthenaCharacter:${skinId}`,
-          "characterEKey": "",
-          "backpackDef": "",
-          "backpackEKey": "",
-          "pickaxeDef": "",
-          "pickaxeEKey": "",
-          "contrailDef": "",
-          "contrailEKey": "",
-          "scratchpad": [],
-          "cosmeticStats": [
-            { "statName": "HabaneroProgression", "statValue": 16 },
-            { "statName": "TotalVictoryCrowns", "statValue": 8 },
-            { "statName": "TotalRoyalRoyales", "statValue": 1 },
-            { "statName": "HasCrown", "statValue": 0 }
-          ]
-        }
-      })
-    };
-
-    const patchUrl = `https://party-service-prod.ol.epicgames.com/party/api/v1/Fortnite/parties/${partyId}/members/${accountId}/meta`;
-    const patchResponse = await axios.patch(patchUrl, {
-      delete: [],
-      revision: currentRevision,
-      update: updateObject
-    }, { headers: { Authorization: `Bearer ${token}` } });
-
-    if (patchResponse.status === 204) {
-      return res.json({ message: `Successfully equipped skin: ${skinName}.` });
-    } else {
-      return res.status(patchResponse.status).json({ error: `Failed to change skin. Status code: ${patchResponse.status}` });
-    }
-  } catch (error) {
-    return res.status(500).json({ error: `An error occurred: ${error.message}` });
-  }
-});
 
 // Start the server
 app.listen(port, () => {
-  console.log(`API running on port ${port}`);
+  console.log(`Server is running on http://localhost:${port}`);
 });
