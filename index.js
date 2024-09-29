@@ -9,8 +9,8 @@ app.use(express.json()); // Middleware to parse JSON request bodies
 // Serve static files (like index.html) from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// POST route for /exchange
-app.post('/exchange', async (req, res) => {
+// get route for /exchange
+app.get('/exchange', async (req, res) => {
   try {
     const accessToken = req.headers.authorization;
 
@@ -78,7 +78,7 @@ app.get('/device-auth-get', async (req, res) => {
       'Content-Type': 'application/json',
     };
 
-    const response = await axios.post(url, {}, { headers });
+    const response = await axios.get(url, {}, { headers });
 
     if (response.status === 200) {
       const deviceInfo = response.data;
@@ -106,8 +106,8 @@ app.get('/device-auth-get', async (req, res) => {
     return res.status(500).json({ error: `An error occurred: ${error.message}` });
   }
 });
-// POST route for /device-auth-to-token
-app.post('/device-auth-to-token', async (req, res) => {
+// get route for /device-auth-to-token
+app.get('/device-auth-to-token', async (req, res) => {
   try {
     // Extract necessary headers
     const accountId = req.headers['account-id'];
@@ -133,8 +133,8 @@ app.post('/device-auth-to-token', async (req, res) => {
       'secret': secret
     });
 
-    // Perform the POST request to get the access token
-    const response = await axios.post(url, data.toString(), { headers });
+    // Perform the get request to get the access token
+    const response = await axios.get(url, data.toString(), { headers });
 
     if (response.status === 200) {
       const responseData = response.data;
